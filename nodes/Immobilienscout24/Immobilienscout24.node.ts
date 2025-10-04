@@ -92,6 +92,12 @@ export class Immobilienscout24 implements INodeType {
 						description: 'Alle Konversationen zu einem Inserat abrufen',
 						action: 'Get many conversations',
 					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Eine spezifische Konversation abrufen',
+						action: 'Get a specific conversation',
+					},
 				],
 				default: 'getAll',
 			},
@@ -124,6 +130,42 @@ export class Immobilienscout24 implements INodeType {
 					show: {
 						resource: [
 							'expose',
+						],
+						operation: [
+							'get',
+						],
+					},
+				},
+			},
+			{
+				displayName: 'Reference ID',
+				name: 'referenceId',
+				type: 'string',
+				required: true,
+				default: '',
+				description: 'Die ID des Inserats',
+				displayOptions: {
+					show: {
+						resource: [
+							'conversation',
+						],
+						operation: [
+							'get',
+						],
+					},
+				},
+			},
+			{
+				displayName: 'Conversation ID',
+				name: 'conversationId',
+				type: 'string',
+				required: true,
+				default: '',
+				description: 'Die ID der Konversation',
+				displayOptions: {
+					show: {
+						resource: [
+							'conversation',
 						],
 						operation: [
 							'get',
@@ -292,6 +334,17 @@ export class Immobilienscout24 implements INodeType {
 								size,
 								plusUserPriority: plusUserPriority ? 'true' : 'false',
 							},
+						);
+					} else if (operation === 'get') {
+						const referenceId = this.getNodeParameter('referenceId', i) as string;
+						const conversationId = this.getNodeParameter('conversationId', i) as string;
+
+						responseData = await immobilienscout24ApiRequest.call(
+							this,
+							'GET',
+							`/nachrichten-manager/api/references/${referenceId}/conversations/${conversationId}`,
+							{},
+							{},
 						);
 					}
 				}
